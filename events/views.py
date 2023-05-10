@@ -54,3 +54,12 @@ def list_venue(request):
 def show_venue(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
     return render(request, 'events/show_venue.html', {'venue': venue})
+
+
+def search_venues(request):
+    if request.method == "POST":
+        searched = request.POST.get('searched')
+        venues = Venue.objects.filter(name__contains=searched)
+        return render(request, 'events/search_venue.html', {'searched': searched, 'venues': venues})
+    else:
+        return HttpResponseRedirect('/')
