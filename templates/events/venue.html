@@ -1,13 +1,13 @@
 {% extends 'events/base.html' %}
 {% block content %}
-    <div style="text-align: center;">
+    <div>
         <h1>Venues</h1>
         <br><br>
         <table class="table table-bordered table-striped table-hover">
             {% for venue in list %}
                 <tr>
-                    <td>
-                        <a href="{% url 'show-venue' venue.id %}">{{ venue }}</a><br/>
+                    <td class="d-flex flex-row justify-content-between">
+                        <a href="{% url 'show-venue' venue.id %}">{{ venue }}</a><a class="btn btn-outline-secondary ml-auto" href="{% url 'update-venue' venue.id %}">Update</a><br/>
                     </td>
                 </tr>
             {% endfor %}
