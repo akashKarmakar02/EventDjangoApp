@@ -7,7 +7,12 @@
             {% for venue in list %}
                 <tr>
                     <td class="d-flex flex-row justify-content-between">
-                        <a href="{% url 'show-venue' venue.id %}">{{ venue }}</a><a class="btn btn-outline-secondary ml-auto" href="{% url 'update-venue' venue.id %}">Update</a><br/>
+                        <a href="{% url 'show-venue' venue.id %}">{{ venue }}</a>
+                        <div class="ml-auto">
+                            <a class="btn btn-outline-secondary" href="{% url 'update-venue' venue.id %}">Update</a>
+                            <a class="btn btn-outline-danger" href="{% url 'delete-venue' venue.id %}">Delete</a>
+                        </div>
+                        <br/>
                     </td>
                 </tr>
             {% endfor %}
