@@ -7,8 +7,6 @@ from .forms import VenueForm, EventForm
 from django.http import HttpResponseRedirect
 
 
-# Create your views here.
-
 def home(request, year=datetime.now().year, month=datetime.now().strftime('%B')):
     month = month.title()
     month_number = list(calendar.month_name).index(month)
@@ -26,7 +24,7 @@ def home(request, year=datetime.now().year, month=datetime.now().strftime('%B'))
 
 
 def all_events(request):
-    event_list = Event.objects.all()
+    event_list = Event.objects.all().order_by('name')
 
     return render(request, 'events/event_list.html', {"event_list": event_list})
 
@@ -62,7 +60,7 @@ def add_event(request):
 
 
 def list_venue(request):
-    venue_list = Venue.objects.all()
+    venue_list = Venue.objects.all().order_by('name')
     return render(request, 'events/venue.html', {'list': venue_list})
 
 
@@ -98,3 +96,17 @@ def update_event(request, event_id):
         return HttpResponseRedirect('/events')
 
     return render(request, 'events/update_event.html', {'event': event, 'form': form})
+
+
+def delete_event(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    event.delete()
+
+    return HttpResponseRedirect('/events')
+
+
+def delete_venue(request, venue_id):
+    venue = Venue.objects.get(pk=venue_id)
+    venue.delete()
+
+    return HttpResponseRedirect('/list_venue')
