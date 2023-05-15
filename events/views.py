@@ -1,10 +1,62 @@
+import csv
+
 from django.shortcuts import render
 import calendar
 from calendar import HTMLCalendar
 from datetime import datetime
 from .models import Event, Venue
 from .forms import VenueForm, EventForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+
+
+# Generate a PDF File
+def venue_pdf(request):
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+
+    text_obj = c.beginText()
+    text_obj.setTextOrigin(inch, inch)
+    text_obj.setFont("Helvetica", 14)
+
+    venues = Venue.objects.all()
+
+    for venue in venues:
+        text_obj.textLine(f'Venue Name: {venue.name}')
+        text_obj.textLine(f'Address: {venue.address}')
+        text_obj.textLine(f'Zip Code: {venue.zip_code}')
+        text_obj.textLine(f'Phone: {venue.phone}')
+        text_obj.textLine(f'Website: {venue.web}')
+        text_obj.textLine(f'Email: {venue.email_address}')
+        text_obj.textLine('')
+        text_obj.textLine('')
+
+    c.drawText(text_obj)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename='venue.pdf')
+
+
+# Generate a CSV file
+def venue_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=venue.csv'
+
+    writer = csv.writer(response)
+
+    venues = Venue.objects.all()
+
+    writer.writerow(['Venue', 'Address', 'Zip Code', 'Phone', 'Website', 'Email Address'])
+    for venue in venues:
+        writer.writerow([venue, venue.address, venue.zip_code, venue.phone, venue.web, venue.email_address])
+
+    return response
 
 
 def home(request, year=datetime.now().year, month=datetime.now().strftime('%B')):
