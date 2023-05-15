@@ -32,6 +32,12 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'list-venue' %}">Venues</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'venue-csv' %}">Venue CSV</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'venue-pdf' %}">Venue PDF</a>
+          </li>
         </ul>
         <form class="form-inline my-2 my-lg-0" method="post" action="{% url 'search-venues' %}">
             {% csrf_token %}
