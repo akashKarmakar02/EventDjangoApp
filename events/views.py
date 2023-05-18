@@ -1,5 +1,6 @@
 import csv
 
+from django.core.paginator import Paginator
 from django.shortcuts import render
 import calendar
 from calendar import HTMLCalendar
@@ -112,7 +113,10 @@ def add_event(request):
 
 
 def list_venue(request):
-    venue_list = Venue.objects.all().order_by('name')
+    p = Paginator(Venue.objects.all(), 1)
+    page = request.GET.get('page')
+    venue_list = p.get_page(page)
+
     return render(request, 'events/venue.html', {'list': venue_list})
 
 
