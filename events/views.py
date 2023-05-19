@@ -1,5 +1,4 @@
 import csv
-
 from django.core.paginator import Paginator
 from django.shortcuts import render
 import calendar
@@ -116,8 +115,10 @@ def list_venue(request):
     p = Paginator(Venue.objects.all(), 1)
     page = request.GET.get('page')
     venue_list = p.get_page(page)
+    pages = venue_list.paginator.num_pages
+    pages = range(1, pages + 1)
 
-    return render(request, 'events/venue.html', {'list': venue_list})
+    return render(request, 'events/venue.html', {'list': venue_list, 'pages': pages})
 
 
 def show_venue(request, venue_id):
