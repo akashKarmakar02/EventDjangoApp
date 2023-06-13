@@ -12,6 +12,7 @@ import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
+from django.contrib.auth.decorators import login_required
 
 
 # Generate a PDF File
@@ -81,6 +82,7 @@ def all_events(request):
     return render(request, 'events/event_list.html', {"event_list": event_list})
 
 
+@login_required
 def add_venue(request):
     submitted = False
     if request.method == "POST":
@@ -96,6 +98,7 @@ def add_venue(request):
     return render(request, 'events/add_venue.html', {'form': form, 'submitted': submitted})
 
 
+@login_required
 def add_event(request):
     submitted = False
     if request.method == "POST":
@@ -135,6 +138,7 @@ def search_venues(request):
         return HttpResponseRedirect('/')
 
 
+@login_required
 def update_venue(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
     form = VenueForm(request.POST or None, instance=venue)
@@ -145,6 +149,7 @@ def update_venue(request, venue_id):
     return render(request, 'events/update_venue.html', {'venue': venue, 'form': form})
 
 
+@login_required
 def update_event(request, event_id):
     event = Event.objects.get(pk=event_id)
     form = EventForm(request.POST or None, instance=event)
@@ -155,6 +160,7 @@ def update_event(request, event_id):
     return render(request, 'events/update_event.html', {'event': event, 'form': form})
 
 
+@login_required
 def delete_event(request, event_id):
     event = Event.objects.get(pk=event_id)
     event.delete()
@@ -162,6 +168,7 @@ def delete_event(request, event_id):
     return HttpResponseRedirect('/events')
 
 
+@login_required
 def delete_venue(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
     venue.delete()
