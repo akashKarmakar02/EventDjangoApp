@@ -1,6 +1,6 @@
 {% extends 'events/base.html' %}
 {% block content %}
-    <center>
+    <div class="shadow bg-body p-4 mb-5 rounded">
         <h1>Add Venue To Database</h1>
         <br>
         <br>
@@ -10,8 +10,8 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="submit" class="btn btn-secondary" value="Submit">
+            <input type="submit" class="btn btn-secondary mt-4" value="Submit">
         </form>
         {% endif %}
-    </center>
+    </div>
 {% endblock %}
