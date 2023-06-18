@@ -1,11 +1,12 @@
 import csv
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 import calendar
 from calendar import HTMLCalendar
 from datetime import datetime
 from .models import Event, Venue
-from .forms import VenueForm, EventForm
+from .forms import VenueForm, EventForm, UserEventForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.http import FileResponse
 import io
@@ -102,12 +103,24 @@ def add_venue(request):
 def add_event(request):
     submitted = False
     if request.method == "POST":
-        form = EventForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/add_event?submitted=True')
+        if request.user.is_superuser:
+            form = EventForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/add_event?submitted=True')
+        else:
+            form = UserEventForm(request.POST)
+            if form.is_valid():
+                event = form.save(commit=False)
+                event.manager = request.user
+                event.save()
+                return HttpResponseRedirect('/add_event?submitted=True')
+
     else:
-        form = EventForm
+        if request.user.is_superuser:
+            form = EventForm
+        else:
+            form = UserEventForm
         if 'submitted' in request.GET:
             submitted = True
 
@@ -115,11 +128,13 @@ def add_event(request):
 
 
 def list_venue(request):
-    p = Paginator(Venue.objects.all(), 1)
+    p = Paginator(Venue.objects.all(), 2)
     page = request.GET.get('page')
     venue_list = p.get_page(page)
     pages = venue_list.paginator.num_pages
     pages = range(1, pages + 1)
+    for venue in Venue.objects.all():
+        print(venue.owner)
 
     return render(request, 'events/venue.html', {'list': venue_list, 'pages': pages})
 
@@ -152,7 +167,13 @@ def update_venue(request, venue_id):
 @login_required
 def update_event(request, event_id):
     event = Event.objects.get(pk=event_id)
-    form = EventForm(request.POST or None, instance=event)
+    if request.user != event.manager:
+        messages.warning(request, 'Access denied')
+        return redirect('list-events')
+    if request.user.is_superuser:
+        form = EventForm(request.POST or None, instance=event)
+    else:
+        form = UserEventForm(request.POST or None, instance=event)
     if form.is_valid():
         form.save()
         return HttpResponseRedirect('/events')
