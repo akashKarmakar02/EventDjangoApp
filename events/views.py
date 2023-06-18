@@ -184,7 +184,10 @@ def update_event(request, event_id):
 @login_required
 def delete_event(request, event_id):
     event = Event.objects.get(pk=event_id)
-    event.delete()
+    if event.manager == request.user:
+        event.delete()
+    else:
+        messages.warning(request, "You are not authorized to do that.")
 
     return HttpResponseRedirect('/events')
 
@@ -192,6 +195,9 @@ def delete_event(request, event_id):
 @login_required
 def delete_venue(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
-    venue.delete()
+    if venue.owner == request.user:
+        venue.delete()
+    else:
+        messages.warning(request, "You are not authorized to do that.")
 
     return HttpResponseRedirect('/list_venue')
